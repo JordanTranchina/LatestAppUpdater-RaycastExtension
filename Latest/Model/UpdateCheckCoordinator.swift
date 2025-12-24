@@ -3,7 +3,7 @@
 //  Latest
 //
 //  Created by Max Langer on 07.04.17.
-//  Copyright © 2017 Max Langer. All rights reserved.
+//  Copyright © 2023 Max Langer. All rights reserved.
 //
 
 import Foundation
@@ -42,7 +42,7 @@ class UpdateCheckCoordinator {
 	var appProvider: AppProviding {
 		return self.dataStore
 	}
-        
+         
 	
 	// MARK: - Initialization
 	
@@ -124,7 +124,7 @@ class UpdateCheckCoordinator {
 			self.progressDelegate?.updateCheckerDidFinishCheckingForUpdates(self)
 		}
 	}
-    
+     
 	/// Callback to notify that an app has been updated.
 	private func didCheck(_ bundle: App.Bundle, _ update: Result<App.Update, Error>?) {
 		let app = self.dataStore.set(update, for: bundle)
@@ -155,8 +155,9 @@ extension UpdateCheckCoordinator {
 	}
 	
 	/// Returns the update check operation for the given app bundle.
-	static func operation(forChecking bundle: App.Bundle, repository: UpdateRepository?, completion: @escaping UpdateCheckerOperation.UpdateCheckerCompletionBlock) -> UpdateCheckerOperation? {
+	static func operation(forChecking bundle: App.Bundle, repository: UpdateRepository?, completion: @escaping (Result<App.Update, Error>) -> Void) -> UpdateCheckerOperation? {
 		return self.availableOperations.first { $0.sourceType == bundle.source }?.init(with: bundle, repository: repository, completionBlock: completion)
 	}
 	
 }
+

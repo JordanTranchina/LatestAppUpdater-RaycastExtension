@@ -1,3 +1,4 @@
+#if !CLI
 //
 //  SparkleUpdateOperation.swift
 //  Latest
@@ -215,3 +216,5 @@ extension SparkleUpdateOperation: SPUUpdaterDelegate {
 	}
 	
 }
+#endif // !CLI
+

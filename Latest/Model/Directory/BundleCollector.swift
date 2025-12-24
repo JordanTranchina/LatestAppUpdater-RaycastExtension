@@ -9,6 +9,12 @@
 import Foundation
 import UniformTypeIdentifiers
 
+#if !CLI
+// Declare private CF function
+@_silgen_name("_CFBundleFlushBundleCaches")
+func _CFBundleFlushBundleCaches(_ bundle: Any)
+#endif
+
 /// Gathers apps at a given URL.
 enum BundleCollector {
 	
@@ -58,9 +64,13 @@ enum BundleCollector {
 		}
 		
 		// Find update source
+		#if CLI
+		let source: App.Source = .none
+		#else
 		guard let source = UpdateCheckCoordinator.source(forAppAt: url) else {
 			return nil
 		}
+		#endif
 		
 		// Skip bundles which are explicitly excluded
 		guard !excludedBundleIdentifiers.contains(where: { identifier.contains($0) }) else {
@@ -83,11 +93,13 @@ fileprivate extension Bundle {
 	
 	/// Returns the bundle version which is guaranteed to be current.
 	var uncachedBundleVersion: String? {
-		let bundleRef = CFBundleCreate(.none, self.bundleURL as CFURL)
+		guard let bundleRef = CFBundleCreate(.none, self.bundleURL as CFURL) else { return nil }
 		
 		// (NS)Bundle has a cache for (all?) properties, presumably to reduce disk access. Therefore, after updating an app, the old bundle version may be
 		// returned. Flushing the cache (private method) resolves this.
+		#if !CLI
 		_CFBundleFlushBundleCaches(bundleRef)
+		#endif
 		
 		return infoDictionary?["CFBundleVersion"] as? String
 	}
@@ -102,3 +114,4 @@ fileprivate extension Bundle {
 		return infoDictionary?["CFBundleShortVersionString"] as? String
 	}
 }
+

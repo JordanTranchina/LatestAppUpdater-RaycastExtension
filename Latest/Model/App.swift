@@ -6,7 +6,10 @@
 //  Copyright © 2022 Max Langer. All rights reserved.
 //
 
-import Cocoa
+import Foundation
+#if canImport(AppKit)
+import AppKit
+#endif
 
 /// The combined representation of an app bundle and its associated update information.
 class App {
@@ -179,7 +182,11 @@ extension App {
 	
 	/// Reveals the app at a given index in Finder
 	func showInFinder() {
+		#if canImport(AppKit)
 		NSWorkspace.shared.activateFileViewerSelecting([self.fileURL])
+		#else
+		// No-op for non-AppKit environments (e.g., CLI)
+		#endif
 	}
 
 	
@@ -187,15 +194,21 @@ extension App {
 	
 	/// Returns an attributed string that highlights a given search query within this app's name.
 	func highlightedName(for query: String?) -> NSAttributedString {
+		#if canImport(AppKit)
 		let name = bundle.name
 		let attributedName = NSMutableAttributedString(string: name)
 		
 		if let queryString = query, let selectedRange = name.range(of: queryString, options: .caseInsensitive) {
+			#if !CLI
 			attributedName.addAttribute(.foregroundColor, value: NSColor(resource: .fadedSearchText), range: NSMakeRange(0, name.count))
 			attributedName.removeAttribute(.foregroundColor, range: NSRange(selectedRange, in: name))
+			#endif
 		}
 		
 		return attributedName
+		#else
+		return NSAttributedString(string: bundle.name)
+		#endif
 	}
 
 }
@@ -280,3 +293,4 @@ extension App: CustomDebugStringConvertible {
 		
 	}
 }
+

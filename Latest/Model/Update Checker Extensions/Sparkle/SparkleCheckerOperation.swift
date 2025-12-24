@@ -1,3 +1,4 @@
+#if !CLI
 //
 //  MacAppStoreUpdateCheckerOperation.swift
 //  Latest
@@ -177,3 +178,4 @@ extension SparkleUpdateCheckerOperation: SPUUpdaterDelegate {
 	}
 	
 }
+#endif // !CLI

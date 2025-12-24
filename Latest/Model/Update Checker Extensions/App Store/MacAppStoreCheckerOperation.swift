@@ -1,3 +1,4 @@
+#if !CLI
 //
 //  MacAppStoreUpdateCheckerOperation.swift
 //  Latest
@@ -274,3 +275,5 @@ fileprivate struct AppStoreEntry: Decodable {
 	}()
 	
 }
+#endif // !CLI
+

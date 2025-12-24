@@ -1,3 +1,4 @@
+#if !CLI
 //
 //  HomebrewCheckerOperation.swift
 //  Latest
@@ -61,3 +62,4 @@ class HomebrewCheckerOperation: StatefulOperation, UpdateCheckerOperation, @unch
 	}
 	
 }
+#endif // !CLI

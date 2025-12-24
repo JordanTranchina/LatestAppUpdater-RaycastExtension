@@ -2,30 +2,18 @@
 //  ListCommand.swift
 //  latest-cli
 //
-//  Lists all apps and their update status.
+//  Lists all installed apps.
 //
 
 import Foundation
 
-/// Command to list all apps with their update status.
+/// Command to list all installed apps.
 class ListCommand {
     
     func execute(json: Bool) {
-        // Collect app bundles from /Applications
-        let applicationsURL = URL(fileURLWithPath: "/Applications")
-        let bundles = BundleCollector.collectBundles(at: applicationsURL)
+        let scanner = CLIAppScanner()
         
-        // Also check user Applications folder
-        let userAppsURL = FileManager.default.homeDirectoryForCurrentUser
-            .appendingPathComponent("Applications")
-        let userBundles = BundleCollector.collectBundles(at: userAppsURL)
-        
-        let allBundles = bundles + userBundles
-        
-        // Check for updates for each bundle
-        let checker = CLIUpdateChecker()
-        
-        checker.checkUpdates(for: allBundles) { apps in
+        scanner.scanApps { apps in
             if json {
                 self.outputJSON(apps: apps)
             } else {
@@ -51,20 +39,17 @@ class ListCommand {
     }
     
     private func outputText(apps: [CLIAppInfo]) {
-        let updatable = apps.filter { $0.availableVersion != nil }
-        
-        if updatable.isEmpty {
-            print("All apps are up to date!")
-        } else {
-            print("Apps with updates available:")
+        print("Installed Apps (\(apps.count) found):")
+        print("")
+        for app in apps {
+            print("  \(app.name)")
+            print("    Version: \(app.installedVersion)")
+            print("    Source: \(app.source)")
+            print("    ID: \(app.id)")
             print("")
-            for app in updatable {
-                print("  \(app.name)")
-                print("    Current: \(app.installedVersion)")
-                print("    Available: \(app.availableVersion ?? "N/A")")
-                print("    Source: \(app.source)")
-                print("")
-            }
         }
+        print("--------------------------")
+        print("SCAN COMPLETED: \(apps.count) apps listed.")
+        print("--------------------------")
     }
 }

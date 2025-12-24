@@ -6,7 +6,11 @@
 //  Copyright © 2023 Max Langer. All rights reserved.
 //
 
+#if canImport(AppKit)
 import AppKit
+#else
+import Foundation
+#endif
 
 /// User defaults key for storing the last cache update date.
 private let UpdateDateKey = "UpdateDateKey"

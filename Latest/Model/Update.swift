@@ -6,7 +6,7 @@
 //  Copyright © 2017 Max Langer. All rights reserved.
 //
 
-import Cocoa
+import Foundation
 
 extension App {
 	
@@ -60,7 +60,11 @@ extension App {
 		
 		/// Whether the app is currently being updated.
 		var isUpdating: Bool {
+			#if !CLI
 			return UpdateQueue.shared.contains(self.app.identifier)
+			#else
+			return false
+			#endif
 		}
 		
 		/// Whether the update is performed using a built in updater.
@@ -91,7 +95,9 @@ extension App {
 		
 		/// Cancels the scheduled update for this app.
 		func cancelUpdate() {
+			#if !CLI
 			UpdateQueue.shared.cancelUpdate(for: self.app.identifier)
+			#endif
 		}
 		
 		

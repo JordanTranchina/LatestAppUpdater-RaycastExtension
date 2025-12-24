@@ -7,33 +7,29 @@
 
 import Foundation
 
-/// JSON-serializable representation of app update info.
+/// JSON-serializable representation of app info.
 struct CLIAppInfo: Codable {
     let id: String
     let name: String
     let installedVersion: String
-    let availableVersion: String?
     let source: String
+    
+    // For future use when we add update checking
+    let availableVersion: String?
     let changelog: String?
     let canInstall: Bool
     
-    init(bundle: App.Bundle, updateResult: Result<App.Update, Error>?) {
+    /// Initialize from an App.Bundle (without update info)
+    init(bundle: App.Bundle) {
         self.id = bundle.bundleIdentifier
         self.name = bundle.name
         self.installedVersion = bundle.version.displayVersion
-        
-        switch updateResult {
-        case .success(let update):
-            self.availableVersion = update.updateAvailable ? update.remoteVersion.displayVersion : nil
-            self.changelog = update.releaseNotes?.plainText
-            self.canInstall = update.updateAvailable
-        case .failure, .none:
-            self.availableVersion = nil
-            self.changelog = nil
-            self.canInstall = false
-        }
-        
         self.source = bundle.source.rawValue
+        
+        // No update info available in simplified mode
+        self.availableVersion = nil
+        self.changelog = nil
+        self.canInstall = false
     }
 }
 
@@ -49,22 +45,5 @@ extension Version {
             return versionNumber
         }
         return buildNumber ?? "Unknown"
-    }
-}
-
-// MARK: - ReleaseNotes Extension
-
-extension App.Update.ReleaseNotes {
-    /// Extracts plain text from release notes if possible.
-    var plainText: String? {
-        switch self {
-        case .html(let string):
-            // Strip HTML tags for CLI output
-            return string.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
-        case .encoded(let data):
-            return String(data: data, encoding: .utf8)
-        case .url:
-            return nil
-        }
     }
 }

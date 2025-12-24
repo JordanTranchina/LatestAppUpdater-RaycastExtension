@@ -2,52 +2,41 @@
 //  CLIUpdateChecker.swift
 //  latest-cli
 //
-//  Simplified update checker for CLI use.
-//  Reuses the existing update check operations from Latest.
+//  Simplified app scanner for CLI use.
+//  For MVP, just lists installed apps without full update checking.
 //
 
 import Foundation
 
-/// Simplified update checker for CLI that doesn't require AppKit.
-class CLIUpdateChecker {
+/// Simplified app scanner for CLI that doesn't require AppKit or Sparkle.
+class CLIAppScanner {
     
-    private let operationQueue: OperationQueue = {
-        let queue = OperationQueue()
-        queue.maxConcurrentOperationCount = 10
-        return queue
-    }()
-    
-    /// Check updates for the given bundles and call completion when done.
-    func checkUpdates(for bundles: [App.Bundle], completion: @escaping ([CLIAppInfo]) -> Void) {
-        var results = [CLIAppInfo]()
-        let lock = NSLock()
-        
-        // Create a repository for caching
-        let repository = UpdateRepository.newRepository()
-        
-        // Create operations for each bundle
-        let operations = bundles.compactMap { bundle -> UpdateCheckerOperation? in
-            return UpdateCheckCoordinator.operation(forChecking: bundle, repository: repository) { result in
-                lock.lock()
-                defer { lock.unlock() }
-                
-                let appInfo = CLIAppInfo(bundle: bundle, updateResult: result)
-                results.append(appInfo)
-            }
-        }
-        
-        // If no operations, return immediately
-        guard !operations.isEmpty else {
-            completion([])
-            return
-        }
-        
-        // Run update checks in background
+    /// Scan for apps and return their info.
+    func scanApps(completion: @escaping ([CLIAppInfo]) -> Void) {
         DispatchQueue.global().async {
-            self.operationQueue.addOperations(operations, waitUntilFinished: true)
+            var results = [CLIAppInfo]()
             
-            // Sort results by name
-            let sorted = results.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+            // Collect app bundles from /Applications
+            let applicationsURL = URL(fileURLWithPath: "/Applications")
+            let bundles = BundleCollector.collectBundles(at: applicationsURL)
+            
+            // Also check user Applications folder
+            let userAppsURL = FileManager.default.homeDirectoryForCurrentUser
+                .appendingPathComponent("Applications")
+            let userBundles = BundleCollector.collectBundles(at: userAppsURL)
+            
+            let allBundles = bundles + userBundles
+            
+            // Convert to CLI info objects
+            for bundle in allBundles {
+                let info = CLIAppInfo(bundle: bundle)
+                results.append(info)
+            }
+            
+            // Sort by name
+            let sorted = results.sorted { 
+                $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending 
+            }
             
             DispatchQueue.main.async {
                 completion(sorted)

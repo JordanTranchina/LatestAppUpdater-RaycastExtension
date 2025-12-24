@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -80,6 +80,24 @@
 		50FEB87D2B1BE630006FB75D /* OSVersionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50FEB87C2B1BE630006FB75D /* OSVersionTest.swift */; };
 		50FEB87F2B1BE67F006FB75D /* VersionSanitizationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50FEB87E2B1BE67E006FB75D /* VersionSanitizationTest.swift */; };
 		50FEB8812B1D2402006FB75D /* ExcludedAppIdentifiers.plist in Resources */ = {isa = PBXBuildFile; fileRef = 50FEB8802B1D2402006FB75D /* ExcludedAppIdentifiers.plist */; };
+		EB2925272EFC738800A9E0FB /* LatestCLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB2925232EFC738800A9E0FB /* LatestCLI.swift */; };
+		EB2925282EFC738800A9E0FB /* CLIUpdateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB2925222EFC738800A9E0FB /* CLIUpdateChecker.swift */; };
+		EB2925292EFC738800A9E0FB /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB2925242EFC738800A9E0FB /* main.swift */; };
+		EB29252A2EFC738800A9E0FB /* InstallCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB29251E2EFC738800A9E0FB /* InstallCommand.swift */; };
+		EB29252B2EFC738800A9E0FB /* CLIAppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB2925212EFC738800A9E0FB /* CLIAppInfo.swift */; };
+		EB29252C2EFC738800A9E0FB /* ListCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB29251F2EFC738800A9E0FB /* ListCommand.swift */; };
+		EB29252D2EFC738800A9E0FB /* StubOperations.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB2925252EFC738800A9E0FB /* StubOperations.swift */; };
+		EB29252E2EFC738800A9E0FB /* CheckCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB29251D2EFC738800A9E0FB /* CheckCommand.swift */; };
+		EB29252F2EFC74A900A9E0FB /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5058E9C227863FC80028F564 /* App.swift */; };
+		EB2925302EFC74DF00A9E0FB /* AppLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5073753E278998A300F371D8 /* AppLibrary.swift */; };
+		EB2925312EFC74E800A9E0FB /* BundleCollector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501EF8EC2B9A665A00F0D759 /* BundleCollector.swift */; };
+		EB2925322EFC74FF00A9E0FB /* AppDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506DF77521248F6200D792FC /* AppDataStore.swift */; };
+		EB2925332EFC750F00A9E0FB /* StatefulOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5039DE8A22CA39ED0088B39B /* StatefulOperation.swift */; };
+		EB2925352EFC753700A9E0FB /* Version.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509512101FF362A1003D2D7F /* Version.swift */; };
+		EB2925362EFC75B600A9E0FB /* AppDirectory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501EF8EE2B9A77B400F0D759 /* AppDirectory.swift */; };
+		EB2925372EFC75C600A9E0FB /* AppDirectoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B016972C38986300590339 /* AppDirectoryStore.swift */; };
+		EB2925382EFC75D600A9E0FB /* VersionParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E4EB062B17DACB00A70A7D /* VersionParser.swift */; };
+		EB2925392EFC75E500A9E0FB /* LatestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506A8F6622EC14CC00C755AF /* LatestError.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -91,6 +109,18 @@
 			remoteInfo = Latest;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		EB2925142EFC710E00A9E0FB /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		29A88F88296B7DC2000A5EDE /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fa; path = fa.lproj/Main.strings; sourceTree = "<group>"; };
@@ -333,7 +363,20 @@
 		50FEB87C2B1BE630006FB75D /* OSVersionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OSVersionTest.swift; sourceTree = "<group>"; };
 		50FEB87E2B1BE67E006FB75D /* VersionSanitizationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionSanitizationTest.swift; sourceTree = "<group>"; };
 		50FEB8802B1D2402006FB75D /* ExcludedAppIdentifiers.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = ExcludedAppIdentifiers.plist; sourceTree = "<group>"; };
+		EB2925162EFC710E00A9E0FB /* latest-cli */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "latest-cli"; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB29251D2EFC738800A9E0FB /* CheckCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckCommand.swift; sourceTree = "<group>"; };
+		EB29251E2EFC738800A9E0FB /* InstallCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstallCommand.swift; sourceTree = "<group>"; };
+		EB29251F2EFC738800A9E0FB /* ListCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCommand.swift; sourceTree = "<group>"; };
+		EB2925212EFC738800A9E0FB /* CLIAppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLIAppInfo.swift; sourceTree = "<group>"; };
+		EB2925222EFC738800A9E0FB /* CLIUpdateChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLIUpdateChecker.swift; sourceTree = "<group>"; };
+		EB2925232EFC738800A9E0FB /* LatestCLI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LatestCLI.swift; sourceTree = "<group>"; };
+		EB2925242EFC738800A9E0FB /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		EB2925252EFC738800A9E0FB /* StubOperations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubOperations.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		EB2925172EFC710E00A9E0FB /* latest-cli */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "latest-cli"; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		50290E6E1E53EB6A00133E3D /* Frameworks */ = {
@@ -347,6 +390,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		50C81D661FBADC5900324C2E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EB2925132EFC710E00A9E0FB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -370,11 +420,12 @@
 		50290E681E53EB6A00133E3D = {
 			isa = PBXGroup;
 			children = (
+				EB2925262EFC738800A9E0FB /* CLI */,
 				50290E731E53EB6A00133E3D /* Latest */,
 				50C81D6A1FBADC5900324C2E /* Tests */,
+				EB2925172EFC710E00A9E0FB /* latest-cli */,
 				5046AFF21FF6CECD00ABAA97 /* Frameworks */,
 				50290E721E53EB6A00133E3D /* Products */,
-				5040D45528DBB641009BF379 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -383,6 +434,7 @@
 			children = (
 				50290E711E53EB6A00133E3D /* Latest.app */,
 				50C81D691FBADC5900324C2E /* Latest Tests.xctest */,
+				EB2925162EFC710E00A9E0FB /* latest-cli */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -420,13 +472,6 @@
 				5039DE8C22CAA2790088B39B /* MacAppStoreUpdateOperation.swift */,
 			);
 			path = Updater;
-			sourceTree = "<group>";
-		};
-		5040D45528DBB641009BF379 /* Recovered References */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 		5040D45928DBB753009BF379 /* Homebrew */ = {
@@ -747,6 +792,30 @@
 			path = Frameworks/StoreFoundation;
 			sourceTree = "<group>";
 		};
+		EB2925202EFC738800A9E0FB /* Commands */ = {
+			isa = PBXGroup;
+			children = (
+				EB29251D2EFC738800A9E0FB /* CheckCommand.swift */,
+				EB29251E2EFC738800A9E0FB /* InstallCommand.swift */,
+				EB29251F2EFC738800A9E0FB /* ListCommand.swift */,
+			);
+			path = Commands;
+			sourceTree = "<group>";
+		};
+		EB2925262EFC738800A9E0FB /* CLI */ = {
+			isa = PBXGroup;
+			children = (
+				EB2925202EFC738800A9E0FB /* Commands */,
+				EB2925212EFC738800A9E0FB /* CLIAppInfo.swift */,
+				EB2925222EFC738800A9E0FB /* CLIUpdateChecker.swift */,
+				EB2925232EFC738800A9E0FB /* LatestCLI.swift */,
+				EB2925242EFC738800A9E0FB /* main.swift */,
+				EB2925252EFC738800A9E0FB /* StubOperations.swift */,
+			);
+			name = CLI;
+			path = Latest/CLI;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -789,6 +858,28 @@
 			productReference = 50C81D691FBADC5900324C2E /* Latest Tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		EB2925152EFC710E00A9E0FB /* latest-cli */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EB29251C2EFC710E00A9E0FB /* Build configuration list for PBXNativeTarget "latest-cli" */;
+			buildPhases = (
+				EB2925122EFC710E00A9E0FB /* Sources */,
+				EB2925132EFC710E00A9E0FB /* Frameworks */,
+				EB2925142EFC710E00A9E0FB /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				EB2925172EFC710E00A9E0FB /* latest-cli */,
+			);
+			name = "latest-cli";
+			packageProductDependencies = (
+			);
+			productName = "latest-cli";
+			productReference = EB2925162EFC710E00A9E0FB /* latest-cli */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -797,13 +888,12 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				CLASSPREFIX = "";
-				LastSwiftUpdateCheck = 1510;
+				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 1640;
 				ORGANIZATIONNAME = "Max Langer";
 				TargetAttributes = {
 					50290E701E53EB6A00133E3D = {
 						CreatedOnToolsVersion = 8.3;
-						DevelopmentTeam = VFABJ5RE5Q;
 						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
@@ -818,6 +908,9 @@
 						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 50290E701E53EB6A00133E3D;
+					};
+					EB2925152EFC710E00A9E0FB = {
+						CreatedOnToolsVersion = 26.2;
 					};
 				};
 			};
@@ -873,6 +966,7 @@
 			targets = (
 				50290E701E53EB6A00133E3D /* Latest */,
 				50C81D681FBADC5900324C2E /* Latest Tests */,
+				EB2925152EFC710E00A9E0FB /* latest-cli */,
 			);
 		};
 /* End PBXProject section */
@@ -999,6 +1093,31 @@
 				50FEB87D2B1BE630006FB75D /* OSVersionTest.swift in Sources */,
 				50FEB87F2B1BE67F006FB75D /* VersionSanitizationTest.swift in Sources */,
 				50E4EB092B17DFCE00A70A7D /* VersionParserTest.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EB2925122EFC710E00A9E0FB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EB29252F2EFC74A900A9E0FB /* App.swift in Sources */,
+				EB2925352EFC753700A9E0FB /* Version.swift in Sources */,
+				EB2925272EFC738800A9E0FB /* LatestCLI.swift in Sources */,
+				EB2925362EFC75B600A9E0FB /* AppDirectory.swift in Sources */,
+				EB2925312EFC74E800A9E0FB /* BundleCollector.swift in Sources */,
+				EB2925282EFC738800A9E0FB /* CLIUpdateChecker.swift in Sources */,
+				EB2925292EFC738800A9E0FB /* main.swift in Sources */,
+				EB2925322EFC74FF00A9E0FB /* AppDataStore.swift in Sources */,
+				EB2925392EFC75E500A9E0FB /* LatestError.swift in Sources */,
+				EB2925382EFC75D600A9E0FB /* VersionParser.swift in Sources */,
+				EB2925332EFC750F00A9E0FB /* StatefulOperation.swift in Sources */,
+				EB29252A2EFC738800A9E0FB /* InstallCommand.swift in Sources */,
+				EB2925372EFC75C600A9E0FB /* AppDirectoryStore.swift in Sources */,
+				EB2925302EFC74DF00A9E0FB /* AppLibrary.swift in Sources */,
+				EB29252B2EFC738800A9E0FB /* CLIAppInfo.swift in Sources */,
+				EB29252C2EFC738800A9E0FB /* ListCommand.swift in Sources */,
+				EB29252D2EFC738800A9E0FB /* StubOperations.swift in Sources */,
+				EB29252E2EFC738800A9E0FB /* CheckCommand.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1314,6 +1433,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = 4GTF274RAS;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1348,6 +1468,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = 4GTF274RAS;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1424,6 +1545,52 @@
 			};
 			name = Release;
 		};
+		EB29251A2EFC710E00A9E0FB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 4GTF274RAS;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		EB29251B2EFC710E00A9E0FB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 4GTF274RAS;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1450,6 +1617,15 @@
 			buildConfigurations = (
 				50C81D701FBADC5900324C2E /* Debug */,
 				50C81D711FBADC5900324C2E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EB29251C2EFC710E00A9E0FB /* Build configuration list for PBXNativeTarget "latest-cli" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EB29251A2EFC710E00A9E0FB /* Debug */,
+				EB29251B2EFC710E00A9E0FB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
