@@ -17,6 +17,7 @@ FILES=(
     "Latest/CLI/CLIAppInfo.swift"
     "Latest/CLI/CLIUpdateChecker.swift"
     "Latest/CLI/StubOperations.swift"
+    "Latest/CLI/SparkleLiteChecker.swift"
     "Latest/CLI/Commands/ListCommand.swift"
     "Latest/CLI/Commands/CheckCommand.swift"
     "Latest/CLI/Commands/InstallCommand.swift"
@@ -41,6 +42,11 @@ FILES=(
     "Latest/Model/Utilities/StatefulOperation.swift"
     "Latest/Model/Utilities/FailableDecodable.swift"
     "Latest/Utilities/LatestError.swift"
+    
+    # Real Operations
+    "Latest/Model/Update Checker Extensions/App Store/MacAppStoreCheckerOperation.swift"
+    "Latest/Model/Update Checker Extensions/Homebrew/HomebrewCheckerOperation.swift"
+    "Latest/Model/Sparkle/Sparkle.swift"
 )
 
 # Run swiftc
@@ -49,8 +55,15 @@ swiftc $SWIFT_FLAGS -o "$OUTPUT_BINARY" "${FILES[@]}"
 if [ $? -eq 0 ]; then
     # Sign for local execution (required for Apple Silicon)
     codesign -s - "$OUTPUT_BINARY"
+    
+    # Copy to Raycast extension assets
+    ASSETS_DIR="raycast-extension/assets"
+    mkdir -p "$ASSETS_DIR"
+    cp "$OUTPUT_BINARY" "$ASSETS_DIR/$OUTPUT_BINARY"
+    
     echo "--------------------------"
     echo "BUILD SUCCEEDED: $OUTPUT_BINARY"
+    echo "COPIED TO: $ASSETS_DIR"
     echo "--------------------------"
 else
     echo "--------------------------"

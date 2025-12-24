@@ -31,6 +31,28 @@ struct CLIAppInfo: Codable {
         self.changelog = nil
         self.canInstall = false
     }
+
+    /// Initialize from an App.Update
+    init(update: App.Update) {
+        self.id = update.app.bundleIdentifier
+        self.name = update.app.name
+        self.installedVersion = update.app.version.displayVersion
+        self.source = update.source.rawValue
+        self.availableVersion = update.remoteVersion.displayVersion
+        self.changelog = update.releaseNotes?.displayString
+        // For MVP, we consider an app "installable" if it has a remote version
+        self.canInstall = true
+    }
+}
+
+extension App.Update.ReleaseNotes {
+    var displayString: String {
+        switch self {
+        case .html(let string): return string
+        case .url(let url): return url.absoluteString
+        case .encoded(let data): return String(data: data, encoding: .utf8) ?? ""
+        }
+    }
 }
 
 // MARK: - Version Extension

@@ -232,8 +232,9 @@ class UpdateRepository {
 				"plist"
 			}
 			
+			let bundleIdentifier = Bundle.main.bundleIdentifier ?? "com.maxcodes.latest.cli"
 			return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first?
-				.appendingPathComponent(Bundle.main.bundleIdentifier!)
+				.appendingPathComponent(bundleIdentifier)
 				.appendingPathComponent(name).appendingPathExtension(pathExtension)
 		}
 		
@@ -243,7 +244,10 @@ class UpdateRepository {
 			case .repository:
 				return nil
 			case .unsupportedApps:
-				return try! Data(contentsOf: Bundle.main.url(forResource: "ExcludedAppIdentifiers", withExtension: "plist")!)
+				if let url = Bundle.main.url(forResource: "ExcludedAppIdentifiers", withExtension: "plist") {
+					return try? Data(contentsOf: url)
+				}
+				return nil
 			}
 		}
 		

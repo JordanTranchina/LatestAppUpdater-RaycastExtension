@@ -1,44 +1,30 @@
-import { List, ActionPanel, Action, showToast, Toast, Icon } from "@raycast/api";
+import { List, ActionPanel, Action, Icon, environment, Color, showToast } from "@raycast/api";
 import { useExec } from "@raycast/utils";
 import { existsSync } from "fs";
+import { join } from "path";
+import React from "react";
 
-// Path to the CLI inside the Latest app bundle
-const CLI_PATH = "/Applications/Latest.app/Contents/MacOS/latest-cli";
+// Path to the CLI bundled in the extension assets
+const CLI_PATH = join(environment.assetsPath, "latest-cli");
+// ... (omitting interface for brevity, but it's there)
 
-// Interface for app update data from CLI
-interface AppUpdate {
+// Interface for app info from CLI
+interface CLIAppInfo {
   id: string;
   name: string;
   installedVersion: string;
-  availableVersion: string;
-  source: "appstore" | "sparkle" | "homebrew" | "direct";
-  changelog?: string;
+  source: string;
+  availableVersion: string | null;
+  changelog: string | null;
   canInstall: boolean;
 }
 
 export default function CheckUpdates() {
-  // Check if Latest app and CLI are installed
-  const latestAppPath = "/Applications/Latest.app";
   const cliExists = existsSync(CLI_PATH);
-  const appExists = existsSync(latestAppPath);
 
-  // For now, show placeholder since CLI doesn't exist yet
-  if (!appExists) {
-    return (
-      <List>
-        <List.EmptyView
-          icon={Icon.Download}
-          title="Latest App Not Installed"
-          description="Install the Latest app to check for updates"
-          actions={
-            <ActionPanel>
-              <Action.OpenInBrowser title="Download Latest" url="https://max.codes/latest" />
-            </ActionPanel>
-          }
-        />
-      </List>
-    );
-  }
+  const { data, isLoading, error } = useExec(CLI_PATH, ["list", "--json"], {
+    execute: cliExists,
+  });
 
   if (!cliExists) {
     return (
@@ -46,27 +32,83 @@ export default function CheckUpdates() {
         <List.EmptyView
           icon={Icon.Hammer}
           title="CLI Helper Not Found"
-          description="The latest-cli helper is not yet available. This is expected during development."
-          actions={
-            <ActionPanel>
-              <Action.Open title="Open Latest App" target={latestAppPath} />
-            </ActionPanel>
-          }
+          description="The latest-cli helper is missing. Run ./build_cli.sh to build and bundle it."
         />
       </List>
     );
   }
 
-  // Once CLI exists, this will work:
-  // const { data, isLoading, error } = useExec(CLI_PATH, ["list", "--json"]);
+  if (error) {
+    return (
+      <List>
+        <List.EmptyView
+          icon={Icon.Warning}
+          title="Execution Error"
+          description={error.message}
+        />
+      </List>
+    );
+  }
+
+  const apps: CLIAppInfo[] = data ? JSON.parse(data) : [];
+  
+  // Sort: apps with updates first
+  const sortedApps = [...apps].sort((a, b) => {
+    if (a.availableVersion && !b.availableVersion) return -1;
+    if (!a.availableVersion && b.availableVersion) return 1;
+    return a.name.localeCompare(b.name);
+  });
 
   return (
-    <List>
-      <List.EmptyView
-        icon={Icon.CheckCircle}
-        title="Ready for CLI Integration"
-        description="The extension scaffold is complete. Next: build the latest-cli helper."
-      />
+    <List isLoading={isLoading} searchBarPlaceholder="Search apps...">
+      {sortedApps.map((app) => {
+        const hasUpdate = app.availableVersion && app.availableVersion !== app.installedVersion;
+        
+        return (
+          <List.Item
+            key={app.id}
+            title={app.name}
+            subtitle={app.id}
+            icon={{ fileIcon: `/Applications/${app.name}.app` }}
+            accessories={[
+              { 
+                text: { 
+                  value: hasUpdate ? `↑ ${app.availableVersion}` : app.installedVersion, 
+                  color: hasUpdate ? Color.Orange : undefined 
+                },
+                tooltip: hasUpdate ? `Update Available: ${app.availableVersion}` : `Up to Date: ${app.installedVersion}` 
+              },
+              { tag: { value: app.source, color: getSourceColor(app.source) }, tooltip: "Update Source" },
+            ]}
+            actions={
+              <ActionPanel>
+                {hasUpdate && (
+                  <Action
+                    title="Install Update"
+                    icon={Icon.Download}
+                    onAction={() => showToast({ title: "Install not implemented yet", message: app.id })}
+                  />
+                )}
+                <Action.OpenInBrowser
+                  title="Open in Finder"
+                  url={`file:///Applications/${app.name}.app`}
+                  icon={Icon.Finder}
+                />
+                <Action.CopyToClipboard title="Copy ID" content={app.id} />
+              </ActionPanel>
+            }
+          />
+        );
+      })}
     </List>
   );
+}
+
+function getSourceColor(source: string) {
+  switch (source.toLowerCase()) {
+    case "appstore": return "blue";
+    case "homebrew": return "orange";
+    case "sparkle": return "purple";
+    default: return undefined;
+  }
 }

@@ -1,4 +1,3 @@
-#if !CLI
 //
 //  HomebrewCheckerOperation.swift
 //  Latest
@@ -7,13 +6,13 @@
 //  Copyright © 2022 Max Langer. All rights reserved.
 //
 
-import Cocoa
+import Foundation
 
 /// The operation for checking for updates via Homebrew.
 class HomebrewCheckerOperation: StatefulOperation, UpdateCheckerOperation, @unchecked Sendable {
 	
 	static var sourceType: App.Source {
-		return .none
+		return .homebrew
 	}
 	
 	/// The bundle to be checked for updates.
@@ -62,4 +61,3 @@ class HomebrewCheckerOperation: StatefulOperation, UpdateCheckerOperation, @unch
 	}
 	
 }
-#endif // !CLI

@@ -1,4 +1,3 @@
-#if !CLI
 //
 //  MacAppStoreUpdateCheckerOperation.swift
 //  Latest
@@ -7,7 +6,11 @@
 //  Copyright © 2019 Max Langer. All rights reserved.
 //
 
-import Cocoa
+#if canImport(AppKit)
+import AppKit
+#else
+import Foundation
+#endif
 
 let MalformedURLError = NSError(domain: NSURLErrorDomain, code: NSURLErrorUnsupportedURL, userInfo: nil)
 
@@ -101,12 +104,16 @@ extension MacAppStoreUpdateCheckerOperation {
 		let action: App.Update.Action = if Self.isIOSAppBundle(at: app.fileURL) {
 			// iOS Apps: Open App Store page where the user can update manually. The update operation does not work for them.
 			.external(label: NSLocalizedString("AppStoreSource", comment: "The source name of apps loaded from the App Store."), block: { app in
+				#if canImport(AppKit)
 				NSWorkspace.shared.open(entry.pageURL)
+				#endif
 			})
 		} else {
 			// Perform the update in-app
 			.builtIn(block: { app in
+				#if !CLI
 				UpdateQueue.shared.addOperation(MacAppStoreUpdateOperation(bundleIdentifier: app.bundleIdentifier, appIdentifier: app.identifier, appStoreIdentifier: entry.appStoreIdentifier))
+				#endif
 			})
 
 		}
@@ -275,5 +282,4 @@ fileprivate struct AppStoreEntry: Decodable {
 	}()
 	
 }
-#endif // !CLI
 

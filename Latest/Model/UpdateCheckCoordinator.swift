@@ -142,11 +142,19 @@ extension UpdateCheckCoordinator {
 	
 	/// List of available update checking operations.
 	private static var availableOperations: [UpdateCheckerOperation.Type] {
+		#if CLI
+		return [
+			MacAppStoreUpdateCheckerOperation.self,
+			SparkleLiteCheckerOperation.self,
+			HomebrewCheckerOperation.self
+		]
+		#else
 		return [
 			MacAppStoreUpdateCheckerOperation.self,
 			SparkleUpdateCheckerOperation.self,
 			HomebrewCheckerOperation.self
 		]
+		#endif
 	}
 	
 	/// Returns the update source for the app at the given url.

@@ -7,12 +7,19 @@ import Foundation
 
 class InstallCommand {
     func execute(appId: String?, stream: Bool) {
-        if let appId = appId {
-            print("Install requested for: \(appId)")
-            print("Note: Installation via CLI is not yet implemented in this preview.")
-        } else {
+        guard let appId = appId else {
             print("Error: --id <bundle-id> is required for the install command.")
+            exit(1)
         }
-        exit(1)
+        
+        let manager = CLIInstallManager(appId: appId, stream: stream)
+        let semaphore = DispatchSemaphore(value: 0)
+        
+        manager.install { success in
+            semaphore.signal()
+        }
+        
+        semaphore.wait()
+        exit(0)
     }
 }

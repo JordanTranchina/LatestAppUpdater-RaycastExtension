@@ -64,13 +64,9 @@ enum BundleCollector {
 		}
 		
 		// Find update source
-		#if CLI
-		let source: App.Source = .none
-		#else
 		guard let source = UpdateCheckCoordinator.source(forAppAt: url) else {
 			return nil
 		}
-		#endif
 		
 		// Skip bundles which are explicitly excluded
 		guard !excludedBundleIdentifiers.contains(where: { identifier.contains($0) }) else {

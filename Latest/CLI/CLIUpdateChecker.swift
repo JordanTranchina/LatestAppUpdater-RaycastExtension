@@ -8,14 +8,12 @@
 
 import Foundation
 
-/// Simplified app scanner for CLI that doesn't require AppKit or Sparkle.
+/// Simplified app scanner for CLI that performs asynchronous update checks.
 class CLIAppScanner {
     
-    /// Scan for apps and return their info.
+    /// Scan for apps and check for updates.
     func scanApps(completion: @escaping ([CLIAppInfo]) -> Void) {
         DispatchQueue.global().async {
-            var results = [CLIAppInfo]()
-            
             // Collect app bundles from /Applications
             let applicationsURL = URL(fileURLWithPath: "/Applications")
             let bundles = BundleCollector.collectBundles(at: applicationsURL)
@@ -27,11 +25,41 @@ class CLIAppScanner {
             
             let allBundles = bundles + userBundles
             
-            // Convert to CLI info objects
+            let group = DispatchGroup()
+            var results = [CLIAppInfo]()
+            let lock = NSLock()
+            
+            let repository = UpdateRepository.newRepository()
+            
             for bundle in allBundles {
-                let info = CLIAppInfo(bundle: bundle)
-                results.append(info)
+                group.enter()
+                
+                // Get the operation for this bundle
+                if let op = UpdateCheckCoordinator.operation(forChecking: bundle, repository: repository, completion: { result in
+                    lock.lock()
+                    switch result {
+                    case .success(let update):
+                        results.append(CLIAppInfo(update: update))
+                    case .failure:
+                        // If check fails, still include the app as an "installed" entry
+                        results.append(CLIAppInfo(bundle: bundle))
+                    }
+                    lock.unlock()
+                    group.leave()
+                }) {
+                    // Execute the operation
+                    op.execute()
+                } else {
+                    // No checker found for this app, just include as installed
+                    lock.lock()
+                    results.append(CLIAppInfo(bundle: bundle))
+                    lock.unlock()
+                    group.leave()
+                }
             }
+            
+            // Wait for all checks to complete (with a 30s timeout)
+            let _ = group.wait(timeout: .now() + 30)
             
             // Sort by name
             let sorted = results.sorted { 

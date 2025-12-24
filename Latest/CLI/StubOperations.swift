@@ -34,14 +34,4 @@ class StubUpdateCheckerOperation: StatefulOperation, UpdateCheckerOperation, @un
     }
 }
 
-class MacAppStoreUpdateCheckerOperation: StubUpdateCheckerOperation, @unchecked Sendable {
-    override class var sourceType: App.Source { .appStore }
-}
 
-class SparkleUpdateCheckerOperation: StubUpdateCheckerOperation, @unchecked Sendable {
-    override class var sourceType: App.Source { .sparkle }
-}
-
-class HomebrewCheckerOperation: StubUpdateCheckerOperation, @unchecked Sendable {
-    override class var sourceType: App.Source { .homebrew }
-}
