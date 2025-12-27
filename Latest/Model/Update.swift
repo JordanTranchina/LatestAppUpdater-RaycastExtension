@@ -36,8 +36,14 @@ extension App {
 		/// A handler performing the update action of the app.
 		let updateAction: Action
 		
+		/// The App Store identifier (trackId) if available
+		let appStoreIdentifier: UInt64?
+        
+        /// The download URL for the update (Sparkle, etc.)
+        let downloadURL: URL?
+		
 		/// Initializes the update with the given parameters.
-		init(app: App.Bundle, remoteVersion: Version, minimumOSVersion: OperatingSystemVersion?, source: Source, date: Date?, releaseNotes: ReleaseNotes?, updateAction: Action) {
+		init(app: App.Bundle, remoteVersion: Version, minimumOSVersion: OperatingSystemVersion?, source: Source, date: Date?, releaseNotes: ReleaseNotes?, updateAction: Action, appStoreIdentifier: UInt64? = nil, downloadURL: URL? = nil) {
 			self.app = app
 			self.remoteVersion = remoteVersion
 			self.minimumOSVersion = minimumOSVersion
@@ -45,6 +51,8 @@ extension App {
 			self.date = date
 			self.releaseNotes = releaseNotes
 			self.updateAction = updateAction
+			self.appStoreIdentifier = appStoreIdentifier
+            self.downloadURL = downloadURL
 		}
 
 		/// Whether an update is available for the given app.

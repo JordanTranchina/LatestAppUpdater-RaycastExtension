@@ -118,7 +118,7 @@ extension MacAppStoreUpdateCheckerOperation {
 
 		}
 		
-		return App.Update(app: self.app, remoteVersion: version, minimumOSVersion: entry.minimumOSVersion, source: .appStore, date: entry.date, releaseNotes: entry.releaseNotes, updateAction: action)
+		return App.Update(app: self.app, remoteVersion: version, minimumOSVersion: entry.minimumOSVersion, source: .appStore, date: entry.date, releaseNotes: entry.releaseNotes, updateAction: action, appStoreIdentifier: entry.appStoreIdentifier)
 	}
 	
 	/// Fetches update info and returns the result in the given completion handler.

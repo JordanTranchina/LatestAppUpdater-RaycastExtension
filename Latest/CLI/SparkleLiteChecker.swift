@@ -68,37 +68,49 @@ class SparkleLiteCheckerOperation: StatefulOperation, UpdateCheckerOperation, @u
     }
     
     private func parse(xmlString: String) {
-        // Find the first <enclosure ... sparkle:version="..." ...>
-        // Note: This is a very crude parser for MVP. 
-        // Real logic should use XMLParser if available.
+        // Crudely split by <item> tags
+        let items = xmlString.components(separatedBy: "<item>")
+        var bestUpdate: App.Update?
         
-        let versionRegex = try? NSRegularExpression(pattern: "sparkle:version=\"([^\"]+)\"", options: [])
-        let shortVersionRegex = try? NSRegularExpression(pattern: "sparkle:shortVersionString=\"([^\"]+)\"", options: [])
-        
-        let nsString = xmlString as NSString
-        let range = NSRange(location: 0, length: nsString.length)
-        
-        var buildNumber: String?
-        var versionNumber: String?
-        
-        if let match = versionRegex?.firstMatch(in: xmlString, options: [], range: range) {
-            buildNumber = nsString.substring(with: match.range(at: 1))
+        for item in items {
+            let nsString = item as NSString
+            let range = NSRange(location: 0, length: nsString.length)
+            
+            let versionRegex = try? NSRegularExpression(pattern: "sparkle:version=\"([^\"]+)\"", options: [])
+            let shortVersionRegex = try? NSRegularExpression(pattern: "sparkle:shortVersionString=\"([^\"]+)\"", options: [])
+            let urlRegex = try? NSRegularExpression(pattern: "url=\"([^\"]+)\"", options: [])
+            
+            var buildNumber: String?
+            var versionNumber: String?
+            var downloadURL: URL?
+            
+            if let match = versionRegex?.firstMatch(in: item, options: [], range: range) {
+                buildNumber = nsString.substring(with: match.range(at: 1))
+            }
+            if let match = shortVersionRegex?.firstMatch(in: item, options: [], range: range) {
+                versionNumber = nsString.substring(with: match.range(at: 1))
+            }
+            if let match = urlRegex?.firstMatch(in: item, options: [], range: range) {
+                let urlString = nsString.substring(with: match.range(at: 1))
+                downloadURL = URL(string: urlString)
+            }
+            
+            if versionNumber != nil || buildNumber != nil {
+                let foundVersion = Version(versionNumber: versionNumber, buildNumber: buildNumber)
+                let foundUpdate = App.Update(app: self.app, remoteVersion: foundVersion, minimumOSVersion: nil, source: .sparkle, date: nil, releaseNotes: nil, updateAction: .external(label: "Sparkle", block: { _ in }), downloadURL: downloadURL)
+                
+                if bestUpdate == nil || bestUpdate!.remoteVersion < foundUpdate.remoteVersion {
+                    bestUpdate = foundUpdate
+                }
+            }
         }
         
-        if let match = shortVersionRegex?.firstMatch(in: xmlString, options: [], range: range) {
-            versionNumber = nsString.substring(with: match.range(at: 1))
-        }
-        
-        guard versionNumber != nil || buildNumber != nil else {
+        guard let finalUpdate = bestUpdate else {
             self.finish(with: LatestError.updateInfoUnavailable)
             return
         }
         
-        let version = Version(versionNumber: versionNumber, buildNumber: buildNumber)
-        
-        // For MVP, we don't parse changelogs or minimum OS versions yet
-        self.update = App.Update(app: self.app, remoteVersion: version, minimumOSVersion: nil, source: .sparkle, date: nil, releaseNotes: nil, updateAction: .external(label: "Sparkle", block: { _ in }))
-        
+        self.update = finalUpdate
         self.finish()
     }
 }

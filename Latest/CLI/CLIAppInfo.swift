@@ -14,10 +14,11 @@ struct CLIAppInfo: Codable {
     let installedVersion: String
     let source: String
     
-    // For future use when we add update checking
     let availableVersion: String?
     let changelog: String?
     let canInstall: Bool
+    let appStoreIdentifier: UInt64?
+    let downloadURL: String?
     
     /// Initialize from an App.Bundle (without update info)
     init(bundle: App.Bundle) {
@@ -30,6 +31,8 @@ struct CLIAppInfo: Codable {
         self.availableVersion = nil
         self.changelog = nil
         self.canInstall = false
+        self.appStoreIdentifier = nil
+        self.downloadURL = nil
     }
 
     /// Initialize from an App.Update
@@ -42,6 +45,8 @@ struct CLIAppInfo: Codable {
         self.changelog = update.releaseNotes?.displayString
         // For MVP, we consider an app "installable" if it has a remote version
         self.canInstall = true
+        self.appStoreIdentifier = update.appStoreIdentifier
+        self.downloadURL = update.downloadURL?.absoluteString
     }
 }
 

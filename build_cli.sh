@@ -16,6 +16,9 @@ FILES=(
     "Latest/CLI/LatestCLI.swift"
     "Latest/CLI/CLIAppInfo.swift"
     "Latest/CLI/CLIUpdateChecker.swift"
+    "Latest/CLI/CLIInstallManager.swift"
+    "Latest/CLI/CLIMASUpdateOperation.swift"
+    "Latest/CLI/CommerceKitLite.swift"
     "Latest/CLI/StubOperations.swift"
     "Latest/CLI/SparkleLiteChecker.swift"
     "Latest/CLI/Commands/ListCommand.swift"
@@ -43,10 +46,14 @@ FILES=(
     "Latest/Model/Utilities/FailableDecodable.swift"
     "Latest/Utilities/LatestError.swift"
     
-    # Real Operations
+    # Real Checking Operations
     "Latest/Model/Update Checker Extensions/App Store/MacAppStoreCheckerOperation.swift"
     "Latest/Model/Update Checker Extensions/Homebrew/HomebrewCheckerOperation.swift"
     "Latest/Model/Sparkle/Sparkle.swift"
+
+    # Installation Core
+    "Latest/Model/Updater/UpdateOperation.swift"
+    "Latest/Model/Updater/UpdateQueue.swift"
 )
 
 # Run swiftc

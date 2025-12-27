@@ -90,20 +90,110 @@ class CLIInstallManager {
     }
     
     private func installAppStore(app: CLIAppInfo, completion: @escaping (Bool) -> Void) {
-        self.reportProgress(state: "installing", message: "Requesting App Store update for \(app.name)...")
+        // We typically have the appStoreIdentifier from the re-scan done in install()
+        guard let appStoreId = app.appStoreIdentifier else {
+            self.reportError("Could not determine App Store track ID for \(app.name).")
+            completion(false)
+            return
+        }
+
+        self.reportProgress(state: "installing", message: "Requesting App Store update for \(app.name) (ID: \(appStoreId))...")
         
-        // This will require the implementation that uses CommerceKit
-        // For now, let's stub it with a message
-        self.reportError("App Store installation via CLI is coming soon. Please use the App Store app for now.")
-        completion(false)
+        let operation = CLIMASUpdateOperation(bundleIdentifier: app.id, itemIdentifier: appStoreId) { state in
+            switch state {
+            case .initializing:
+                self.reportProgress(state: "initializing", message: "Connecting to App Store...")
+            case .downloading(let loaded, let total):
+                let progress = total > 0 ? Double(loaded) / Double(total) : 0
+                self.reportProgress(state: "downloading", progress: progress, message: "Downloading... (\(loaded/1024)KB / \(total/1024)KB)")
+            case .extracting(let progress):
+                self.reportProgress(state: "extracting", progress: progress, message: "Extracting...")
+            case .installing:
+                self.reportProgress(state: "installing", message: "Installing...")
+            case .error(let error):
+                self.reportError("App Store update failed: \(error.localizedDescription)")
+                completion(false)
+            case .none:
+                self.reportProgress(state: "completed", message: "Successfully updated \(app.name) via App Store.")
+                completion(true)
+            default:
+                break
+            }
+        }
+        
+        operation.start()
     }
     
     private func installSparkle(app: CLIAppInfo, completion: @escaping (Bool) -> Void) {
-        self.reportProgress(state: "installing", message: "Sparkle installation is not yet automated. Opening Appcast URL...")
+        guard let urlString = app.downloadURL, let url = URL(string: urlString) else {
+            self.reportError("No download URL found for \(app.name).")
+            completion(false)
+            return
+        }
+
+        self.reportProgress(state: "downloading", progress: 0.1, message: "Downloading update from \(url.host ?? "Sparkle")...")
         
-        // Just report that we can't do it headlessly yet
-        self.reportError("Sparkle headless installation is not yet implemented.")
-        completion(false)
+        let task = URLSession.shared.downloadTask(with: url) { localURL, response, error in
+            if let error = error {
+                self.reportError("Download failed: \(error.localizedDescription)")
+                completion(false)
+                return
+            }
+            
+            guard let localURL = localURL else {
+                self.reportError("Download failed: no local URL.")
+                completion(false)
+                return
+            }
+            
+            self.reportProgress(state: "extracting", progress: 0.5, message: "Extracting update...")
+            
+            // For MVP, handle .zip files via unzip command
+            if url.pathExtension.lowercased() == "zip" {
+                let tempDir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+                try? FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+                
+                let process = Process()
+                process.executableURL = URL(fileURLWithPath: "/usr/bin/unzip")
+                process.arguments = ["-o", localURL.path, "-d", tempDir.path]
+                
+                do {
+                    try process.run()
+                    process.waitUntilExit()
+                    
+                    if process.terminationStatus == 0 {
+                        self.reportProgress(state: "installing", progress: 0.9, message: "Finishing installation...")
+                        
+                        // Find the .app in tempDir
+                        let contents = try FileManager.default.contentsOfDirectory(at: tempDir, includingPropertiesForKeys: nil)
+                        if let newAppURL = contents.first(where: { $0.pathExtension == "app" }) {
+                            // Replace the old app
+                            let oldAppURL = URL(fileURLWithPath: "/Applications/\(app.name).app")
+                            
+                            // Note: This might require permissions!
+                            try? FileManager.default.removeItem(at: oldAppURL)
+                            try FileManager.default.moveItem(at: newAppURL, to: oldAppURL)
+                            
+                            self.reportProgress(state: "completed", message: "Successfully updated \(app.name).")
+                            completion(true)
+                        } else {
+                            self.reportError("Could not find .app in extracted archive.")
+                            completion(false)
+                        }
+                    } else {
+                        self.reportError("Unzip failed with exit code \(process.terminationStatus).")
+                        completion(false)
+                    }
+                } catch {
+                    self.reportError("Extraction failed: \(error.localizedDescription)")
+                    completion(false)
+                }
+            } else {
+                self.reportError("Unsupported archive format: .\(url.pathExtension). Only .zip is supported for headless Sparkle updates in this preview.")
+                completion(false)
+            }
+        }
+        task.resume()
     }
     
     private func reportProgress(state: String, progress: Double? = nil, message: String? = nil) {

@@ -39,7 +39,11 @@ class CLIAppScanner {
                     lock.lock()
                     switch result {
                     case .success(let update):
-                        results.append(CLIAppInfo(update: update))
+                        if update.updateAvailable {
+                            results.append(CLIAppInfo(update: update))
+                        } else {
+                            results.append(CLIAppInfo(bundle: bundle))
+                        }
                     case .failure:
                         // If check fails, still include the app as an "installed" entry
                         results.append(CLIAppInfo(bundle: bundle))

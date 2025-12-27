@@ -1,7 +1,8 @@
-import { List, ActionPanel, Action, Icon, environment, Color, showToast } from "@raycast/api";
+import { List, ActionPanel, Action, Icon, environment, Color, showToast, Toast, confirmAlert } from "@raycast/api";
 import { useExec } from "@raycast/utils";
 import { existsSync } from "fs";
 import { join } from "path";
+import { exec } from "child_process";
 import React from "react";
 
 // Path to the CLI bundled in the extension assets
@@ -22,7 +23,7 @@ interface CLIAppInfo {
 export default function CheckUpdates() {
   const cliExists = existsSync(CLI_PATH);
 
-  const { data, isLoading, error } = useExec(CLI_PATH, ["list", "--json"], {
+  const { data, isLoading, error, revalidate } = useExec(CLI_PATH, ["list", "--json"], {
     execute: cliExists,
   });
 
@@ -36,6 +37,45 @@ export default function CheckUpdates() {
         />
       </List>
     );
+  }
+
+  async function installApp(app: CLIAppInfo) {
+    if (await confirmAlert({ title: `Install update for ${app.name}?` })) {
+      const toast = await showToast({
+        style: Toast.Style.Animated,
+        title: "Installing Update",
+        message: app.name,
+      });
+
+      exec(`${CLI_PATH} install --id ${app.id} --json-stream`, (error, stdout, stderr) => {
+        if (error) {
+          toast.style = Toast.Style.Failure;
+          toast.title = "Installation Failed";
+          toast.message = error.message;
+          return;
+        }
+        
+        // Final state from stdout
+        try {
+           const lines = stdout.trim().split("\n");
+           const finalStatus = JSON.parse(lines[lines.length - 1]);
+           if (finalStatus.state === "error") {
+             toast.style = Toast.Style.Failure;
+             toast.title = "Installation Failed";
+             toast.message = finalStatus.message;
+           } else {
+             toast.style = Toast.Style.Success;
+             toast.title = "Installed Successfully";
+             toast.message = `${app.name} has been updated.`;
+             revalidate();
+           }
+        } catch (e) {
+          toast.style = Toast.Style.Success;
+          toast.title = "Installation Finished";
+          revalidate();
+        }
+      });
+    }
   }
 
   if (error) {
@@ -86,7 +126,7 @@ export default function CheckUpdates() {
                   <Action
                     title="Install Update"
                     icon={Icon.Download}
-                    onAction={() => showToast({ title: "Install not implemented yet", message: app.id })}
+                    onAction={() => installApp(app)}
                   />
                 )}
                 <Action.OpenInBrowser
